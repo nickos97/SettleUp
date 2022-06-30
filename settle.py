@@ -6,7 +6,7 @@ import networkx as nx
 
 
 class People:
-    def __init__(self,n):
+    def __init__(self):
         self.Graph = nx.DiGraph()
         
     def add_node(self,id):
@@ -20,24 +20,14 @@ class Settle:
         self.net_amount = {}
         self.transactions = []
         self.N = n
+        self.og_trans = len(edges)
         
-        p=People(n)
+        p=People()
         
         for i in range(self.N):
             p.add_node(i)
         for edge in edges:
             p.add_edge(edge[0],edge[1],cost=edge[2])
-        """p.add_edge(0,2,cost=20)
-        p.add_edge(1,2,cost=14)
-        p.add_edge(2,3,cost=5)
-        p.add_edge(2,1,cost=5)
-        p.add_edge(0,1,cost=8)
-        p.add_edge(9,3,cost=5)
-        p.add_edge(7,8,cost=12)
-        p.add_edge(6,3,cost=6)
-        p.add_edge(9,2,cost=14)
-        p.add_edge(5,4,cost=4)
-        p.add_edge(7,2,cost=3)"""
         
         self.graph = p.Graph
         
@@ -120,11 +110,11 @@ class Settle:
                 self.net_amount.pop(max_index)
                 self.transactions.append((min_index,max_index,max_namount))
                 self.N = self.N - 2
-
-            
+        opt = (self.og_trans - len(self.transactions))/self.og_trans    
+        return self.transactions,opt
         
 
- 
+
 if __name__=='__main__':
     
     n = int(input("Number of nodes: "))
@@ -139,10 +129,10 @@ if __name__=='__main__':
         dept = float(input("Enter dept: "))
         edge.append(dept) 
         edges.append(edge)  
-        ans = input("Do you want to stop3? (y/n): ") 
-    print(edges)
+        ans = input("Do you want to stop? (y/n): ") 
     
     settle = Settle(n,edges)
-    settle.settle_up()
-    for tr in settle.transactions:
-        print(f"Node {tr[0]} pays node {tr[1]}, {tr[2]} euros")
+    transactions,opt = settle.settle_up()
+    for tr in transactions:
+        print(f"{tr[0]} pays {tr[1]}, {tr[2]} euros")
+    print(f"Transactions optimization: {'{:.2f}'.format(opt)}%")
